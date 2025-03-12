@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -15,6 +20,7 @@ type categoryType = {
   closeDialog: () => void;
   form: any;
   onSubmit: any;
+  isEdit: boolean;
 };
 
 export const Dialogs = ({
@@ -22,11 +28,14 @@ export const Dialogs = ({
   closeDialog,
   form,
   onSubmit,
+  isEdit,
 }: categoryType) => {
   return (
     <Dialog open={editCategory} onOpenChange={closeDialog}>
       <DialogContent>
-        <DialogTitle className="text-[18px]">Add new category</DialogTitle>
+        <DialogTitle className="text-[18px]">
+          {isEdit ? "Edit category" : "Add category"}
+        </DialogTitle>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -44,7 +53,9 @@ export const Dialogs = ({
               )}
             />
             <div className="flex justify-end mt-[48px]">
-              <Button type="submit">Add Category</Button>
+              <Button type="submit">
+                {isEdit ? "Edit category" : "Add category"}
+              </Button>
             </div>
           </form>
         </Form>

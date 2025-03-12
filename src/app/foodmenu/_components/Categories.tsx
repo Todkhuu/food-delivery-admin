@@ -9,6 +9,7 @@ import { Dialogs } from "./Dialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { DialogClose } from "@/components/ui/dialog";
 
 const formSchema = z.object({
   categoryName: z.string().min(4).max(50),
@@ -100,17 +101,13 @@ const Categories = () => {
   return (
     <div className="w-[100%] h-auto bg-white p-6 rounded-xl">
       <h2 className="text-[20px] font-semibold">Dishes category</h2>
-      <div className="flex gap-3 mt-4">
-        {categories?.map((category) => {
-          return (
-            <ContextMenus
-              category={category}
-              clickEdit={clickEdit}
-              form={form}
-              deleteData={deleteData}
-            />
-          );
-        })}
+      <div className="flex flex-wrap gap-3 mt-4">
+        <ContextMenus
+          categories={categories}
+          clickEdit={clickEdit}
+          form={form}
+          deleteData={deleteData}
+        />
         <div onClick={clickAdd}>
           <Image
             onClick={() => form.resetField("categoryName")}
@@ -125,6 +122,7 @@ const Categories = () => {
           onSubmit={onSubmit}
           form={form}
           editCategory={editCategory}
+          isEdit={isEdit}
         />
       </div>
     </div>

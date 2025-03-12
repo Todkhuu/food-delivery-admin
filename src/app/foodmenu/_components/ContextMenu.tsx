@@ -9,43 +9,53 @@ import {
 import { Category } from "@/utils/type";
 
 type categoryType = {
-  category: Category;
-  clickEdit: any;
+  categories: Category[];
+  clickEdit: (id: string) => void;
   form: any;
-  deleteData: any;
+  deleteData: (id: string) => void;
 };
 
 export const ContextMenus = ({
-  category,
+  categories,
   clickEdit,
   form,
   deleteData,
 }: categoryType) => {
   return (
-    <ContextMenu key={category._id}>
-      <ContextMenuTrigger>
-        <Button className="rounded-full" variant={"outline"} key={category._id}>
-          {category.categoryName}
-          <Badge className="rounded-full">{category.count}</Badge>
-        </Button>
-      </ContextMenuTrigger>
-      <ContextMenuContent className="p-2">
-        <ContextMenuItem
-          className="p-0"
-          onClick={() => {
-            clickEdit(category._id);
-            form.setValue("categoryName", category.categoryName);
-          }}
-        >
-          <p>Edit</p>
-        </ContextMenuItem>
-        <ContextMenuItem
-          className="p-0"
-          onClick={() => deleteData(category._id)}
-        >
-          <p>Delete</p>
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+    <>
+      {categories?.map((category: Category) => {
+        return (
+          <ContextMenu key={category._id}>
+            <ContextMenuTrigger>
+              <Button
+                className="rounded-full"
+                variant={"outline"}
+                key={category._id}
+              >
+                {category.categoryName}
+                <Badge className="rounded-full">{category.count}</Badge>
+              </Button>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="p-2">
+              <ContextMenuItem
+                className="p-0"
+                onClick={() => {
+                  clickEdit(category._id);
+                  form.setValue("categoryName", category.categoryName);
+                }}
+              >
+                <p>Edit</p>
+              </ContextMenuItem>
+              <ContextMenuItem
+                className="p-0"
+                onClick={() => deleteData(category._id)}
+              >
+                <p>Delete</p>
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        );
+      })}
+    </>
   );
 };

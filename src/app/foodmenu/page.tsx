@@ -17,7 +17,7 @@ const FoodMenu = () => {
   }, []);
 
   return (
-    <div className="bg-[#f4f4f5] w-[88.5vw] h-auto p-6">
+    <div className="bg-[#f4f4f5] w-[100%] h-auto p-6">
       <div className="w-full flex justify-end mb-6">
         <Avatars />
       </div>
