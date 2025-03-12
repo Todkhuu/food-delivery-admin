@@ -2,17 +2,16 @@
 
 import { getData } from "@/utils/data";
 import { Category } from "@/utils/type";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { ContextMenus } from "./ContextMenu";
 import Image from "next/image";
 import { Dialogs } from "./Dialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { DialogClose } from "@/components/ui/dialog";
 
 const formSchema = z.object({
-  categoryName: z.string().min(4).max(50),
+  categoryName: z.string().min(4).max(35),
 });
 
 const Categories = () => {
@@ -27,8 +26,6 @@ const Categories = () => {
       categoryName: "",
     },
   });
-
-  const dialogCloseRef = useRef<HTMLButtonElement>(null);
 
   const getDatas = async () => {
     const data = await getData("food_category");
@@ -47,6 +44,7 @@ const Categories = () => {
       },
       body: JSON.stringify({ categoryName: category }),
     });
+    closeDialog();
     getDatas();
   };
 
@@ -65,10 +63,15 @@ const Categories = () => {
     } catch (error) {
       console.log("error", error);
     }
+    closeDialog();
     getDatas();
   };
 
-  const deleteData = async (id: string) => {
+  const deleteData = async (id: string, count: number) => {
+    if (count > 0) {
+      alert("You can't delete because existed");
+      return;
+    }
     const response = await fetch(`http://localhost:8000/food_category/${id}`, {
       method: "DELETE",
       headers: {
@@ -83,10 +86,6 @@ const Categories = () => {
       editData(ids, values.categoryName);
     } else {
       createData(values.categoryName);
-    }
-
-    if (dialogCloseRef.current) {
-      dialogCloseRef.current.click();
     }
   };
 
@@ -114,22 +113,13 @@ const Categories = () => {
           form={form}
           deleteData={deleteData}
         />
-        <div onClick={clickAdd}>
-          <Image
-            onClick={() => form.resetField("categoryName")}
-            src={"/IconButton.png"}
-            width={36}
-            height={36}
-            alt=""
-          />
-        </div>
         <Dialogs
           closeDialog={closeDialog}
           onSubmit={onSubmit}
           form={form}
           editCategory={editCategory}
           isEdit={isEdit}
-          dialogCloseRef={dialogCloseRef}
+          clickAdd={clickAdd}
         />
       </div>
     </div>

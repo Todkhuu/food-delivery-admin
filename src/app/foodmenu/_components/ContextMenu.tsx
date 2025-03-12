@@ -12,7 +12,7 @@ type categoryType = {
   categories: Category[];
   clickEdit: (id: string) => void;
   form: any;
-  deleteData: (id: string) => void;
+  deleteData: (id: string, count: number) => void;
 };
 
 export const ContextMenus = ({
@@ -48,7 +48,7 @@ export const ContextMenus = ({
               </ContextMenuItem>
               <ContextMenuItem
                 className="p-0"
-                onClick={() => deleteData(category._id)}
+                onClick={() => deleteData(category._id, category.count)}
               >
                 <p>Delete</p>
               </ContextMenuItem>
