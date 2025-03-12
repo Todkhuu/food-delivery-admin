@@ -21,6 +21,7 @@ type categoryType = {
   form: any;
   onSubmit: any;
   isEdit: boolean;
+  dialogCloseRef: any;
 };
 
 export const Dialogs = ({
@@ -29,6 +30,7 @@ export const Dialogs = ({
   form,
   onSubmit,
   isEdit,
+  dialogCloseRef,
 }: categoryType) => {
   return (
     <Dialog open={editCategory} onOpenChange={closeDialog}>
@@ -53,7 +55,7 @@ export const Dialogs = ({
               )}
             />
             <div className="flex justify-end mt-[48px]">
-              <Button type="submit">
+              <Button type="submit" ref={dialogCloseRef}>
                 {isEdit ? "Edit category" : "Add category"}
               </Button>
             </div>

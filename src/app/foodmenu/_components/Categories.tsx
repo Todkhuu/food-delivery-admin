@@ -2,7 +2,7 @@
 
 import { getData } from "@/utils/data";
 import { Category } from "@/utils/type";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ContextMenus } from "./ContextMenu";
 import Image from "next/image";
 import { Dialogs } from "./Dialog";
@@ -27,6 +27,8 @@ const Categories = () => {
       categoryName: "",
     },
   });
+
+  const dialogCloseRef = useRef<HTMLButtonElement>(null);
 
   const getDatas = async () => {
     const data = await getData("food_category");
@@ -82,6 +84,10 @@ const Categories = () => {
     } else {
       createData(values.categoryName);
     }
+
+    if (dialogCloseRef.current) {
+      dialogCloseRef.current.click();
+    }
   };
 
   const clickEdit = (id: string) => {
@@ -123,6 +129,7 @@ const Categories = () => {
           form={form}
           editCategory={editCategory}
           isEdit={isEdit}
+          dialogCloseRef={dialogCloseRef}
         />
       </div>
     </div>
