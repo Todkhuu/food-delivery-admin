@@ -10,9 +10,9 @@ export type foodType = {
   _id?: string | any;
   foodName: string;
   price: number;
-  image: string;
+  image?: string;
   ingredients: string;
-  category?: string;
+  category?: { _id: string; categoryName: string; count: number };
 };
 
 export type UserType = {

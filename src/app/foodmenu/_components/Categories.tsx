@@ -4,7 +4,6 @@ import { getData } from "@/utils/data";
 import { Category } from "@/utils/type";
 import { useEffect, useState } from "react";
 import { ContextMenus } from "./ContextMenu";
-import Image from "next/image";
 import { Dialogs } from "./Dialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
