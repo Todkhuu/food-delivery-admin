@@ -16,12 +16,12 @@ export const AddedFoods = ({
 }: addedFoodsType) => {
   const filtered = foods.filter((food) => food.category?._id == category._id);
   return (
-    <div className="flex flex-wrap gap-4">
+    <>
       {filtered.map((food) => {
         return (
           <div
             key={food._id}
-            className="w-[270px] h-[241px] border-[1px] rounded-[20px] p-4"
+            className="w-[270px] h-[241px] border-[1px] rounded-[20px] overflow-hidden p-4 "
           >
             <div
               style={{ backgroundImage: `url(${food.image})` }}
@@ -41,6 +41,6 @@ export const AddedFoods = ({
           </div>
         );
       })}
-    </div>
+    </>
   );
 };

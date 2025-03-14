@@ -1,11 +1,5 @@
 "use client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
@@ -23,19 +17,14 @@ import {
 } from "@/components/ui/form";
 import { useState } from "react";
 import { Category, foodType } from "@/utils/type";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import EditUpload from "./EditUpload";
+import { Selects } from "./Select";
+import { Select } from "@/components/ui/select";
 
 const formSchema = z.object({
   foodName: z.string().min(4).max(100),
   price: z.coerce.number().min(0.1).max(Infinity),
-  ingredients: z.string().min(4).max(100),
+  ingredients: z.string().min(4).max(400),
   image: z.string().nonempty("image"),
   category: z.string(),
 });
@@ -46,9 +35,22 @@ type editType = {
   getDatas: () => void;
 };
 
+type foodsType = {
+  foodName: string;
+  price: number;
+  ingredients: string;
+  image: string;
+  category: string;
+};
+
 export const EditFood = ({ food, categories, getDatas }: editType) => {
+  console.log(food);
   const [file, setFile] = useState<File>();
   const [ids, setId] = useState<string>("");
+  const [edit, setEdit] = useState<boolean>(false);
+  const [image, setImage] = useState("");
+  const [isImageChanged, setIsImageChanged] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,15 +62,13 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
     },
   });
 
-  const editFood = async (
-    foodName: string,
-    price: number,
-    ingredients: string,
-    category: string,
-    id: string
-  ) => {
-    const imageUrl = await handleUpload();
-    if (!imageUrl) return;
+  const editFood = async (food: foodsType, id: string) => {
+    let imageUrl = image;
+    console.log("aa");
+    if (isImageChanged) {
+      imageUrl = await handleUpload();
+    }
+    if (!image) return;
     console.log("image uploaded ", imageUrl);
     const response = await fetch(`http://localhost:8000/foods/${id}`, {
       method: "PUT",
@@ -77,25 +77,16 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
       },
       body: JSON.stringify({
         ...food,
-        foodName,
         image: imageUrl,
-        price,
-        ingredients,
-        category,
       }),
     });
+    closeDialog();
     getDatas();
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    editFood(
-      values.foodName,
-      values.price,
-      values.ingredients,
-      values.category,
-      ids
-    );
+    editFood(values, ids);
   };
   const clickEdit = (id: string) => {
     setId(id);
@@ -141,31 +132,42 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
         "Content-Type": "application/json",
       },
     });
+    closeDialog();
     getDatas();
+  };
+
+  const closeDialog = () => {
+    setEdit(false);
+  };
+
+  const clickAdd = () => {
+    setEdit(true);
   };
 
   return (
     <div className="w-[44px] h-[44px] bg-white rounded-full flex items-center justify-center">
-      <Dialog>
-        <DialogTrigger
-          onClick={() => {
-            form.setValue("foodName", food.foodName);
-            form.setValue("price", food.price);
-            form.setValue("ingredients", food.ingredients);
-            form.setValue("image", "uploaded");
-          }}
-        >
-          <Image
-            src={"/edit-2.png"}
-            width={16}
-            height={16}
-            alt=""
-            className="w-[16px] h-[16px]"
-          />
-        </DialogTrigger>
+      <div
+        onClick={() => {
+          clickAdd();
+          form.setValue("foodName", food.foodName);
+          form.setValue("price", food.price);
+          form.setValue("ingredients", food.ingredients);
+          form.setValue("image", "uploaded");
+          form.setValue("category", food.category?._id);
+          setImage(food.image);
+        }}
+      >
+        <Image
+          src={"/edit-2.png"}
+          width={16}
+          height={16}
+          alt=""
+          className="w-[16px] h-[16px]"
+        />
+      </div>
+      <Dialog open={edit} onOpenChange={closeDialog}>
         <DialogContent className="w-[472px]">
           <DialogTitle className="text-[18px]">Dishes info</DialogTitle>
-          <DialogDescription></DialogDescription>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -192,22 +194,11 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
                       Dish category
                     </FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange}>
-                        <SelectTrigger className="w-[288px]">
-                          <SelectValue placeholder="Category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => {
-                            return (
-                              <SelectItem
-                                key={category._id}
-                                value={category._id}
-                              >
-                                {category.categoryName}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <Selects categories={categories} />
                       </Select>
                     </FormControl>
                     <FormMessage />
@@ -258,7 +249,12 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
                     </FormLabel>
                     <FormControl>
                       <div className="w-[288px] h-[116px]">
-                        <EditUpload handleFile={handleFile} />
+                        <EditUpload
+                          handleFile={handleFile}
+                          image={image}
+                          setImage={setImage}
+                          isChanged={setIsImageChanged}
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />

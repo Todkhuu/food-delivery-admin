@@ -1,6 +1,6 @@
 "use client";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Category, foodType } from "@/utils/type";
+import { Category } from "@/utils/type";
 import Image from "next/image";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,15 +20,22 @@ import CloudinaryUpload from "./CloudinaryUpload";
 import { useState } from "react";
 
 const formSchema = z.object({
-  foodName: z.string().min(4).max(50),
+  foodName: z.string().min(4).max(Infinity),
   price: z.coerce.number().min(0.1).max(Infinity),
-  ingredients: z.string().min(4).max(50),
+  ingredients: z.string().min(4).max(300),
   image: z.string(),
 });
 
 type addFoodType = {
   category: Category;
   getDatas: () => void;
+};
+
+type foodType = {
+  foodName: string;
+  price: number;
+  ingredients: string;
+  image: string;
 };
 
 export const AddFood = ({ category, getDatas }: addFoodType) => {
@@ -111,7 +118,7 @@ export const AddFood = ({ category, getDatas }: addFoodType) => {
   };
 
   return (
-    <div>
+    <>
       <div
         onClick={clickAdd}
         className="min-w-[270px] h-[241px] border-dashed border-[1px] rounded-[20px] border-[#ef4444] flex flex-col justify-center items-center"
@@ -198,6 +205,6 @@ export const AddFood = ({ category, getDatas }: addFoodType) => {
           </Form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };

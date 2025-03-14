@@ -13,7 +13,6 @@ export const FoodsInCategory = () => {
     const data = await getData("food_category");
     setCategories(data.data);
   };
-  //   useEffect(() => {}, []);
 
   const getDatas = async () => {
     const data = await getData("foods");
@@ -36,7 +35,7 @@ export const FoodsInCategory = () => {
             <h2 className="text-[20px] font-semibold mb-4">
               {category.categoryName} ({category.count})
             </h2>
-            <div className="h-auto flex flex-wrap gap-4">
+            <div className="h-auto bg-[#ffffff] flex flex-wrap gap-4">
               <AddFood category={category} getDatas={getDatas} />
               <AddedFoods
                 category={category}

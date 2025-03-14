@@ -1,13 +1,22 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FileImage } from "lucide-react";
 
-const EditUpload = ({ handleFile }: { handleFile: (_file: File) => void }) => {
-  const [image, setImage] = useState("");
-
+const EditUpload = ({
+  handleFile,
+  isChanged,
+  image,
+  setImage,
+}: {
+  handleFile: (_file: File) => void;
+  image: string;
+  isChanged: (_val: boolean) => void;
+  setImage: Dispatch<SetStateAction<string>>;
+}) => {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    isChanged(true);
     if (!e.target.files) return;
 
     const file = e.target.files[0];
