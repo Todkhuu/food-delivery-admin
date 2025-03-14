@@ -12,7 +12,7 @@ export type foodType = {
   price: number;
   image?: string;
   ingredients: string;
-  category?: { _id: string; categoryName: string; count: number };
+  category?: { _id?: string; categoryName?: string; count?: number };
 };
 
 export type UserType = {

@@ -2,13 +2,13 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import CloudinaryUpload from "./CloudinaryUpload";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState } from "react";
-// import { ComboBox } from "../foodmenu/_components/ComboBox";
 import { Category, foodType } from "@/utils/type";
 import {
   Select,
@@ -31,12 +30,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import EditUpload from "./EditUpload";
 
 const formSchema = z.object({
   foodName: z.string().min(4).max(100),
   price: z.coerce.number().min(0.1).max(Infinity),
   ingredients: z.string().min(4).max(100),
-  image: z.string(),
+  image: z.string().nonempty("image"),
   category: z.string(),
 });
 
@@ -47,6 +47,7 @@ type editType = {
 };
 
 export const EditFood = ({ food, categories, getDatas }: editType) => {
+  const [file, setFile] = useState<File>();
   const [ids, setId] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,27 +60,81 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
     },
   });
 
-  const editFood = async (values: any, id: string) => {
-    const response = await fetch(`http://localhost:8000/foods/${food._id}`, {
+  const editFood = async (
+    foodName: string,
+    price: number,
+    ingredients: string,
+    category: string,
+    id: string
+  ) => {
+    const imageUrl = await handleUpload();
+    if (!imageUrl) return;
+    console.log("image uploaded ", imageUrl);
+    const response = await fetch(`http://localhost:8000/foods/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(values),
+      body: JSON.stringify({
+        ...food,
+        foodName,
+        image: imageUrl,
+        price,
+        ingredients,
+        category,
+      }),
     });
     getDatas();
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    editFood(values, ids);
+    editFood(
+      values.foodName,
+      values.price,
+      values.ingredients,
+      values.category,
+      ids
+    );
   };
   const clickEdit = (id: string) => {
     setId(id);
   };
 
+  const handleFile = (file: File) => {
+    setFile(file);
+  };
+
+  const handleUpload = async () => {
+    const PRESET_NAME = "food-delivery-app";
+    const CLOUDINARY_NAME = "ds6kxgjh0";
+    if (!file) {
+      alert("please select a file");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", PRESET_NAME);
+    formData.append("api_key", CLOUDINARY_NAME);
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await res.json();
+      return data.secure_url;
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload file");
+    }
+  };
+
   const deleteFood = async (id: string) => {
-    console.log("iD!!!", id);
     const response = await fetch(`http://localhost:8000/foods/${id}`, {
       method: "DELETE",
       headers: {
@@ -97,7 +152,7 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
             form.setValue("foodName", food.foodName);
             form.setValue("price", food.price);
             form.setValue("ingredients", food.ingredients);
-            // form.setValue("category" food.category?.categoryName)
+            form.setValue("image", "uploaded");
           }}
         >
           <Image
@@ -110,6 +165,7 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
         </DialogTrigger>
         <DialogContent className="w-[472px]">
           <DialogTitle className="text-[18px]">Dishes info</DialogTitle>
+          <DialogDescription></DialogDescription>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -121,12 +177,7 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
                       Dish name
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        onClick={() => form.setValue("foodName", food.foodName)}
-                        className="w-[288px]"
-                        placeholder=""
-                        {...field}
-                      />
+                      <Input className="w-[288px]" placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -150,7 +201,7 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
                             return (
                               <SelectItem
                                 key={category._id}
-                                value={category.categoryName}
+                                value={category._id}
                               >
                                 {category.categoryName}
                               </SelectItem>
@@ -173,9 +224,6 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        onClick={() =>
-                          form.setValue("ingredients", food.ingredients)
-                        }
                         className="w-[288px]"
                         placeholder=""
                         {...field}
@@ -194,12 +242,7 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
                       Price
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        onClick={() => form.setValue("price", food.price)}
-                        className="w-[288px]"
-                        placeholder=""
-                        {...field}
-                      />
+                      <Input className="w-[288px]" placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -215,7 +258,7 @@ export const EditFood = ({ food, categories, getDatas }: editType) => {
                     </FormLabel>
                     <FormControl>
                       <div className="w-[288px] h-[116px]">
-                        {/* <CloudinaryUpload /> */}
+                        <EditUpload handleFile={handleFile} />
                       </div>
                     </FormControl>
                     <FormMessage />
