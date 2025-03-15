@@ -1,4 +1,10 @@
+import { DataTableDemo } from "./_components/Table";
+
 const Orders = () => {
-  return <div></div>;
+  return (
+    <div className="p-6">
+      <DataTableDemo />
+    </div>
+  );
 };
 export default Orders;
