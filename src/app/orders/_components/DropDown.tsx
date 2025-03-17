@@ -5,8 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Payment } from "./Table";
-import { Table } from "@tanstack/react-table";
+import { Payment } from "./Tables";
 
 export const DropDown = ({ data }: { data: Payment[] }) => {
   return (

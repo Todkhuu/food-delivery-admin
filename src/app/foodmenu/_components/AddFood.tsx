@@ -55,7 +55,6 @@ export const AddFood = ({ category, getDatas }: addFoodType) => {
   const createFood = async (food: foodType) => {
     const imageUrl = await handleUpload();
     if (!imageUrl) return;
-    console.log("image uploaded ", imageUrl);
     const response = await fetch(`http://localhost:8000/foods`, {
       method: "POST",
       headers: {

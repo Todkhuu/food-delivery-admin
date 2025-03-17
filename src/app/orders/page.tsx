@@ -1,9 +1,9 @@
-import { DataTableDemo } from "./_components/Table";
+import { Tables } from "./_components/Tables";
 
 const Orders = () => {
   return (
     <div className="p-6">
-      <DataTableDemo />
+      <Tables />
     </div>
   );
 };

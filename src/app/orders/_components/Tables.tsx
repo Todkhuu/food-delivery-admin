@@ -13,7 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,6 +34,8 @@ import {
 } from "@/components/ui/table";
 import { DropDown } from "./DropDown";
 import { DatePickerWithRange } from "./Calendar";
+import { getData } from "@/utils/data";
+import { FoodOrderType } from "@/utils/type";
 
 const data: Payment[] = [
   {
@@ -95,7 +96,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: "amount",
-    header: () => <div className="">Total</div>,
+    header: () => <div>Total</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("amount"));
 
@@ -117,11 +118,23 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export function DataTableDemo() {
+export function Tables() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [foodOrders, setFoodOrders] = React.useState<FoodOrderType[]>([]);
+  console.log("foodOrders", foodOrders);
+
+  const getDatas = async () => {
+    const datas = await getData("food_order");
+    setFoodOrders(datas.data);
+  };
+
+  React.useEffect(() => {
+    getDatas();
+  }, []);
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
